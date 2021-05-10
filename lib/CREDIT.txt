@@ -1,0 +1,1 @@
+Created by BPetty_Infosec. All directories under this one should have a CREDIT.txt file where possible, in order to give credit to the people who did the work to contain the lists contained within.
