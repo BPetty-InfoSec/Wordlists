@@ -1,1 +1,0 @@
-../lib/jeanphorn/wordlist/rdp_passlist.txt
