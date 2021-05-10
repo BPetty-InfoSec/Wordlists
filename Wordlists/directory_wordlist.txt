@@ -1,1 +1,0 @@
-../lib/Twibow/Pentest-WordLists/directory_wordlist.txt
