@@ -1,0 +1,1 @@
+../lib/jeanphorn/wordlist/pw list 3.txt
