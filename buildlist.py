@@ -15,7 +15,7 @@ def main():
     fileList = checkDir("./lib")
     print(fileList)
     for file in fileList:
-        print(fileList[file] + " : ./Wordlists/" + file)
+        #print(fileList[file] + " : ./Wordlists/" + file)
         try:
             os.symlink("." + fileList[file], "./Wordlists/" + file)
         except:
@@ -24,12 +24,12 @@ def main():
 
 def checkDir(path):
     returnList = {}
-    print(path)
+    #print(path)
     for file in os.listdir(path):
         if file == ".git":
             continue
         elif os.path.isdir(path + "/" + file):
-            print(path + " : " + file)
+            #print(path + " : " + file)
             tempReturn = checkDir(path + "/" + file)
             for item in tempReturn:
                 try:
@@ -42,7 +42,7 @@ def checkDir(path):
             elif file == "README.md":
                 continue
             else:
-                print(file + " is a file")
+                #print(file + " is a file")
                 returnList[file] = path + "/" + file
     return returnList
 
