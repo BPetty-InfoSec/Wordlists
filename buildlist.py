@@ -13,7 +13,7 @@ import os
 
 def main():
     fileList = checkDir("./lib")
-    print(fileList)
+    #print(fileList)
     for file in fileList:
         #print(fileList[file] + " : ./Wordlists/" + file)
         try:
@@ -37,10 +37,12 @@ def checkDir(path):
                 except:
                     returnList[item + "1"] = tempReturn[item]
         else:
-            if file == "CREDIT.txt":
+            if file == "CREDIT.txt":        #Skip CREDIT.txt files
                 continue
-            elif file == "README.md":
+            elif file == "README.md":       #Skip README files
                 continue
+            elif file == ".buildignore":    #Skip directories with this file
+                return []
             else:
                 #print(file + " is a file")
                 returnList[file] = path + "/" + file
