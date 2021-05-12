@@ -49,6 +49,10 @@ def checkDir(path):
                 continue
             elif file == "README.md":       #Skip README files
                 continue
+            elif file == "LICENSE":         #Skip LICENSE files
+                continue
+            elif file == "CODE_OF_CONDUCT.md":   #Skip CODE_OF_CONDUCT files
+                continue
             elif file == ".buildignore":    #Skip directories with this file
                 return []
             else:
