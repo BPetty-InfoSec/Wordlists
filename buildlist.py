@@ -53,6 +53,10 @@ def checkDir(path):
                 continue
             elif file == "CODE_OF_CONDUCT.md":   #Skip CODE_OF_CONDUCT files
                 continue
+            elif file == "CONTRIBUTING.md": #Skip CONTRIBUTING
+                continue
+            elif file == "CONTRIBUTORS.md": #Skip CONTRIBUTORS
+                continue
             elif file == ".buildignore":    #Skip directories with this file
                 return []
             else:
