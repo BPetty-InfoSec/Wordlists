@@ -66,11 +66,23 @@ def checkDir(path):
 
 def iterName(iterName, curNum):             #Increase the number after a filename for duplicate files
     nameString = iterName.split('.')        #Split the string at "."
-    nameString[0] = nameString[0] + str(int(curNum) + 1)
-    for part in nameString:                 #Reconstruct string, even if multiple "."
-        returnName = nameString[part]
-    return returnName
+    returnName = checkDigit(nameString[0],1)
 
+
+
+def checkDigit(checkName, checkRight):
+    returnName=""
+    if checkName.right[-checkRight:].isdigit():
+        returnName = checkDigit(checkName, (checkRight + 1))
+    elif checkRight == 1:
+        returnName = checkName[:checkName.length()-(checkRight-1)] + 1
+    else:
+        if returnName.isdigit():
+            returnName = checkName[:checkName.length()-(checkRight)] + str((int(checkName[-checkRight:]) + 1))
+        else:
+            returnName = checkName + "1"
+            
+            
 def checkName(checkName, checkList):        # Check to see if a name is already in the list
     if checkName in checkList:
         return False
