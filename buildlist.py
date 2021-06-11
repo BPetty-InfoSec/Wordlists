@@ -59,6 +59,14 @@ def checkDir(path):
                 continue
             elif file == ".buildignore":    #Skip directories with this file
                 return []
+            elif file == ".category":       #Return directory based on Category per file
+                with open(path + "/" + file) as f:
+                    categories = f.readlines()
+                    for line in categories:
+                        print(line)
+                        fileInfo = line.split(":")
+                        print(fileInfo[0])
+                        print(fileInfo[1])                        
             else:
                 #print(file + " is a file")
                 returnList[file] = path + "/" + file    #Add the filename and path to the returnList dictionary
