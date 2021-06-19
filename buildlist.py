@@ -9,92 +9,21 @@
 # similar files being automatically ignored.
 # Wordlists will be symlinked into the "Wordlists" directory.
 
-import os
+import os, json
+
+class WordLists:
+    pass
 
 def main():
-    fileList = checkDir("./lib")
-    #print(fileList)
-    for file in fileList:
-        #print(fileList[file] + " : ./Wordlists/" + file)
-        try:                                #Create symlinks in ./Wordlists
-            os.symlink("." + fileList[file], "./Wordlists/" + file)
-        except:                             #Create ./Wordlists if it doesn't exist
-            os.mkdir("Wordlists")
-            os.symlink("." + fileList[file], "./Wordlists/" + file)
+    fileList = checkDir()
 
 def checkDir(path):
-    returnList = {}
-    #print(path)
-    for file in os.listdir(path):
-        if file == ".git":                  #Skip the .git directory in repos
-            continue
-        elif os.path.isdir(path + "/" + file):  #If this is a directory recursively call function
-            #print(path + " : " + file)
-            tempReturn = checkDir(path + "/" + file)
-            for item in tempReturn:         #Process recursively processed files into returnList
-                try:
-                    if checkName(item,returnList):  #Check if name exists
-                        i = 0               #Loop iteration counter
-                        while not checkName(item,returnList):
-                            item = iterName(item)   #Find a name that will work
-                            i += 1
-                        else:
-                            returnList[item] = tempReturn[item]
-                    else:
-                        returnList[item] = tempReturn[item] #Add file and path to returnList
-                except:
-                    returnList["2" + item] = tempReturn[item]   #Avoid edge case with identical filenames
-        else:                               #If this is a file, process the file
-            if file == "CREDIT.txt":        #Skip CREDIT.txt files
-                continue
-            elif file == "README.md":       #Skip README files
-                continue
-            elif file == "LICENSE":         #Skip LICENSE files
-                continue
-            elif file == "CODE_OF_CONDUCT.md":   #Skip CODE_OF_CONDUCT files
-                continue
-            elif file == "CONTRIBUTING.md": #Skip CONTRIBUTING
-                continue
-            elif file == "CONTRIBUTORS.md": #Skip CONTRIBUTORS
-                continue
-            elif file == ".buildignore":    #Skip directories with this file
-                return []
-            elif file == ".category":       #Return directory based on Category per file
-                with open(path + "/" + file) as f:
-                    categories = f.readlines()
-                    for line in categories:
-                        print(line)
-                        fileInfo = line.split(":")
-                        print(fileInfo[0])
-                        print(fileInfo[1])                        
-            else:
-                #print(file + " is a file")
-                returnList[file] = path + "/" + file    #Add the filename and path to the returnList dictionary
-    return returnList
+    workList = []
 
 def iterName(iterName, curNum):             #Increase the number after a filename for duplicate files
-    nameString = iterName.split('.')        #Split the string at "."
-    returnName = checkDigit(nameString[0],1)
+    pass
 
-
-
-def checkDigit(checkName, checkRight):
-    returnName=""
-    if checkName.right[-checkRight:].isdigit():
-        returnName = checkDigit(checkName, (checkRight + 1))
-    elif checkRight == 1:
-        returnName = checkName[:checkName.length()-(checkRight-1)] + 1
-    else:
-        if returnName.isdigit():
-            returnName = checkName[:checkName.length()-(checkRight)] + str((int(checkName[-checkRight:]) + 1))
-        else:
-            returnName = checkName + "1"
-            
-            
 def checkName(checkName, checkList):        # Check to see if a name is already in the list
-    if checkName in checkList:
-        return False
-    else:
-        return True
+    pass
 
 main()
