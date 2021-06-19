@@ -1,10 +1,26 @@
 package main
 /** 
- * Refactoring buildlist.py into Golang 
- * Objectives are improvements in behavior
- * with regards to similarly named files,
- * as well as adding a categorization system
- * to make finding right list easier.
+ * Builds a directory of wordlists from gathered wordlists.
+ * Wordlists are organized by category once a .categories file
+ * with the correct syntax is added to each directory containing
+ * word lists. Works with git repositories, so it is entirely
+ * possible (and fully intended) to allow the user to clone
+ * wordlist git repositories into the repository directory
+ * (lib/ by default)
+ * Once the categories are assigned, directories for each
+ * unique category are created in the designated (Wordlists/
+ * by default) directory, and finally symlinks to the files
+ * in the cloned repositories are created.
+ * 
+ * Respects existing files/directories, so it is safe to run
+ * more than once, allowing an easy workflow of cloning a repository,
+ * creating the .categories file, and then running buildlist again
+ * to update the master set of lists.
+ * 
+ * In the end, the purpose of this application is to create an
+ * easily-accessible master-listing of various lists from different
+ * sources, categorized by use, for use with tools such as
+ * DirBuster (or goBuster) and BurpSuite.
 */
 
 import (
