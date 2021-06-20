@@ -107,15 +107,15 @@ func readDir(basePath string) []fileInfo {
 					returnFile.FName = fileString[0]					//Set file properties
 					returnFile.FPath = basePath + fileString[0]			//Set file properties
 					returnFile.FCats = categories						//Set file properties
-					returnList = append(returnList, returnFile)		//Append file information to returnList
+					returnList = append(returnList, returnFile)			//Append file information to returnList
 				}
 				if err := scanner.Err(); err != nil {
-					log.Fatal(err)									//Error logging
+					log.Fatal(err)										//Error logging
 				}
 			}
 		}
 	}
-	return returnList												//Return returnList to calling function
+	return returnList													//Return returnList to calling function
 }
 
 /**
@@ -200,6 +200,43 @@ func Find(list []string, val string) (int, bool) {
 	return -1, false												//Otherwise, return an index of -1 and false
 }
 
-func checkDir(dirPath string) bool {
-	return true
+/**
+ * Usage: checkDir(dirPath string)
+ * Returns: bool
+ * 
+ * Checks to see if the .categories file exists in the directory
+ * supplied (dirPath) and returns true/false
+ */
+func checkCats(dirPath string) (bool) {
+	var catsExist bool													//Holds true/false value of if .categories exist
+	if _, err := os.Stat(dirPath + ".categories"); os.IsNotExist(err) {	//Checks to see if .categories exist
+		catsExist = false												//Returns false if not
+	} else {
+		catsExist = true												//Otherwise returns true
+	}
+	return catsExist
+}
+
+/**
+ * Usage: checkDir(dirPath string)
+ * Returns: []string
+ * 
+ * Checks for subdirectories and returns a list of subdirectories in the
+ * directory supplied (dirPath)
+ */
+func checkDir(dirPath string) []string {
+	var dirList []string
+	files, err := ioutil.ReadDir(dirPath)								//Read the directory, gather filenames
+	if err != nil {
+		log.Fatal(err)													//Error logging
+	}
+	for _, f := range files {											//Iterate throm directory contents to find sub-directories
+		if f.IsDir() {													//Check to see if the item is a directory
+			dirList = append(dirList,dirPath + f.Name())				//If so, add it to the list
+		}
+	}
+	return dirList
+}
+
+func configCheck(basePath string) {
 }
