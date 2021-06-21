@@ -30,6 +30,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"strconv"
 )
 
 /**
@@ -44,13 +45,36 @@ type fileInfo struct {
 	FCats []string
 }
 
-// Main function
+/**
+ * basePath is the base path that buildlist begins to search within
+ * lineCount is the number of lines to show in the config previews
+ */
+var basePath []string
+var lineCount = 5
+
+/**
+ * Structure to hold config setup information. Holds a string
+ * (directory) and a bool (presence of .categories file or the
+ * lack thereof)
+ */
+type configItem struct {
+	directoryPath 		string
+	categoriesPresent	bool
+}
+
+/**
+ * Main function, contains the primary logic for buildlist
+ */
 func main() {
-	fmt.Println("It begins...")
-	readDir("lib/")														//Sets the directory to start from
+	var configList []configItem											//Sets up the slice to hold configuration confirmation for each directory and subdirectory
+	basePath = append(basePath, "lib/")									//Sets the basePath global variable
+	fmt.Println("It begins...")					
+	configList = checkConfig(basePath)									//Gathers directory and configuration information from library
+	runConfig(configList)												//Verifies configuration with User and allows changes to be made to .categories files
+	readDir(basePath[0])												//Sets the directory to start from
 	var fileList []fileInfo												//Set up the slice to hold file Information
 	var categoryList []string											//Set up the slice to hold categories
-	fileList = readDir("lib/")											//Get all of the filenames
+	fileList = readDir(basePath[0])										//Get all of the filenames
 	categoryList = getCategories(fileList)								//Compile a list of unique category names from fileList
 	createDirs(categoryList)											//Create directories for categories
 	createSymlinks(fileList)											//Create symlinks of lists in directories just created
@@ -201,7 +225,7 @@ func Find(list []string, val string) (int, bool) {
 }
 
 /**
- * Usage: checkDir(dirPath string)
+ * Usage: checkCats(dirPath string)
  * Returns: bool
  * 
  * Checks to see if the .categories file exists in the directory
@@ -232,11 +256,134 @@ func checkDir(dirPath string) []string {
 	}
 	for _, f := range files {											//Iterate throm directory contents to find sub-directories
 		if f.IsDir() {													//Check to see if the item is a directory
-			dirList = append(dirList,dirPath + f.Name())				//If so, add it to the list
+			dirList = append(dirList, dirPath + f.Name() + "/")			//If so, add it to the list
 		}
 	}
-	return dirList
+	for _, d := range dirList {											//Iterate through generated list to check subdirectories
+		var tempList []string											//Holds the temporary list of subdirectories
+		tempList = checkDir(d)											//Append each item from the temporary list to the main one
+		for _, dir := range tempList {									//Iterate through the temporary list to add to the main list
+			dirList = append(dirList, dir)								//Add to the main list
+		}
+	}
+	return dirList														//Return the main list
 }
 
-func configCheck(basePath string) {
+/**
+ * Usage: checkConfig(path []string)
+ * Returns: []configItem
+ * 
+ * Checks to see if a given directory contains a .categories
+ * file. These values (directory path and boolean) are combined
+ * in the configItem struct, and the function returns a slice of
+ * those structs.
+ */
+func checkConfig(basePath []string) []configItem {
+	var workList []string												//List of directories to work with
+	var configList []configItem											//Holds the slice of configItem results
+	for _, appendPath := range basePath {
+		workList = append(workList, appendPath)							//Loads paths into workList
+	}
+	for _, item := range workList {										//Recursively checks for subdirectories
+		var tempList []string											//Temporary list of subdirectories
+		tempList = checkDir(item)										//Checks for subdirectories in each directory loaded
+		for _, addItem := range tempList {								//Iterates through directories to add them into workList again
+			workList = append(workList,addItem)							//Actually adds each directory to the workList slice
+		}
+	}
+	for _, dir := range workList {										//Iterate through workList
+		var tempItem configItem											//Holds configuration files
+		tempItem.categoriesPresent = checkCats(dir)						//Checks each directory in workList for the presence of .categories and stores it in tempItem's directory key
+		tempItem.directoryPath = dir									//Loads boolean to tempItem's boolean key
+		configList = append(configList, tempItem)						//Adds the itme to configList
+		fmt.Println(configList)
+	}
+	return configList													//Returns the list of configItems
+}
+
+/**
+ * Usage: runConfig(configList []configItem)
+ * 
+ * Runs the configuration function to see if the user wants
+ * make any changes to configuration of each directory.
+ */
+func runConfig(configList []configItem) {
+	fmt.Println("Library has been preliminarily indexed")
+	fmt.Println("Checking config for each directory:")
+	fmt.Println()
+	for _, dir := range configList {
+		if dir.categoriesPresent == true {
+			var userChoice string
+			fmt.Println()
+			fmt.Println("****************************************************************")
+			fmt.Println("Directory: " + dir.directoryPath)
+			fmt.Println("Directory has a categories configuration file present.")
+			fmt.Print("Do you wish to edit or alter the categories configuration? [y/N] ")
+			fmt.Scanf("%s", userChoice)
+			fmt.Println()
+			if userChoice == "y" || userChoice == "Y" {
+				setConfig(dir.directoryPath, true)
+			}
+		} else {
+			var userChoice string
+			fmt.Println("Directory: " + dir.directoryPath)
+			fmt.Println("Directory does not have a categories configuration file present.")
+			fmt.Println("Do you wish to create the category configuration? [y/N] ")
+			fmt.Scanf("%s", userChoice)
+			if userChoice == "y" || userChoice == "Y" {
+				setConfig(dir.directoryPath, false)
+			}
+		}
+	}
+}
+
+/**
+ * Usage: setConfig(directoryPath string, isConfig bool)
+ * 
+ * directoryPath is the path to configure
+ * isConfig is if the config exists (true) or not (false)
+ * Sets the config options (categories) for the chosen directory
+ */
+func setConfig(directoryPath string, isConfig bool) {
+	var dirList []string
+	var setCats string														//Variable to hold categories
+	var catSetList []string													//Variable to hold the collected settings
+	fmt.Println("Displaying the first portion of each file in the directory " + directoryPath)
+	files, err := ioutil.ReadDir(directoryPath)								//Read the directory, gather filenames
+	if err != nil {
+		log.Fatal(err)														//Error logging
+	}
+	for _, f := range files {												//Iterate throm directory contents to find sub-directories
+		if f.IsDir() {														//Check to see if the item is a directory
+			dirList = append(dirList, directoryPath + f.Name() + "/")		//If so, add it to the list
+		}
+	}
+	configFile, err := os.Open(directoryPath + ".categories")				//Open the config file
+	if err != nil {															//Check for errors
+		log.Fatal(err)														//Error logging
+	}
+	defer configFile.Close()												//Close the file when the function exits
+	for _, f := range dirList {												//Iterate through files in directory
+		listFile, err := os.Open(directoryPath + f)							//Open the first file
+		if err != nil {														//Check for errors
+			log.Fatal(err)													//Error logging
+		}
+		defer listFile.Close()												//Close the file when the function exits
+		scanner := bufio.NewScanner(listFile)								//Set up the scanner to read files
+		scanner.Split(bufio.ScanLines)										//Put the lines of the file into a slice
+		var count = 1														//Initialization of count variable
+		for scanner.Scan() {												//Scan the lines of the file
+			fmt.Println(strconv.FormatInt(int64(count),10) + ": " + scanner.Text())	//Print each line of the file
+			if count >= lineCount {											//Check to see if count is greater than the global lineCount variable
+				continue													//If the count is greater than lineCount, do nothing
+			} else {
+				count += 1													//Otherwise, increment count variable
+			}
+		}
+		fmt.Println()														//Print output to guide user
+		fmt.Println("Enter the categories to put this list in, separated by commas.")
+		fmt.Scanf("%s",setCats)												//Gather categories list from user
+		catSetList = append(catSetList,(f + ":" + setCats))					//Add the categories of the file to the slice containing strings for .categories
+		fmt.Println(catSetList)
+	}
 }
