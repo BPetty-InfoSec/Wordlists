@@ -89,9 +89,10 @@ Main function:
 
 ---
 ## **_checkFlags()_**
+## **_NO NEED FOR FLAGS, JUST OS.ARGS_**
 **_PARAMETERS:_** None
 
-**_RETURNS:_** cmdFlag (string)
+**_RETURNS:_** cliFlag (string)
 
 **_DESCRIPTION:_** This function returns the flags listed on the command line when runing ./buildlist.go
 
@@ -105,8 +106,8 @@ Main function:
         - Return "all"
 
 ---
-## **_readDirs(cmdFlag) fileList_**
-**_PARAMETERS:_** cmdFlag (string): Either "all", "symlink", or "config"
+## **_readDirs(cliFlag) fileList_**
+**_PARAMETERS:_** cliFlag (string): Either "all", "symlink", or "config"
 
 **_RETURNS:_** mainConfig (type configList)
 
@@ -116,11 +117,11 @@ Main function:
 1. Declare:
     - filesList (fileList)
     - configStatus (configList)
-2. Read the /lib directory: call dirList("/lib", cmdFlag) and populate variables filesList (fileList) and configStatus ([]string)
-3. Check cmdFlag:
-    - If cmdFlag == "--symlink":
+2. Read the /lib directory: call dirList("/lib", cliFlag) and populate variables filesList (fileList) and configStatus ([]string)
+3. Check cliFlag:
+    - If cliFlag == "--symlink":
         - Iterate through filesList and create symlinks and directories in /Wordlists directory
-    - ElseIf cmdFlag == "--config"
+    - ElseIf cliFlag == "--config"
         - Iterate through configStatus
             - For each populated entry:
                 - Show .categories file
@@ -156,30 +157,30 @@ Main function:
                 - Else:
                     - Skip modifying, move to next item
         - Modify filesList to match .categories file in configStatus
-        - Iterate through filesList and create symlinks and directories in /Wordlists directory
+        - Iterate through filesList and create symlinks and directories in /Wordlists directory using createSymlinks(filesList)
 
 ---
-## **_dirList(directory, cmdFlag) dirList configList_**
+## **_dirList(directory, cliFlag) dirList configList_**
 **_PARAMETERS:_** 
 1. directory (string)
-2. cmdFlag (string)
+2. cliFlag (string)
 
 **_RETURNS:_** 
 1. dirList (fileList)
 2. configList ([]string)
 
-**_DESCRIPTION:_** This function reads the contents of a specific directory and returns the list of contents, along with whether the item is a file or directory. This function is recursive, and does all of the heavy lifting for reading the directories. If the cmdFlag variable is not "symlink" then configList slice will be populated with the paths of directories that need to have .categories files set. Essentially what happens, is that each time this function is called, it will call itself again for each directory that it finds. Basically, it will descend to the bottom of each directory structure in turn, working its way back up to the /lib folder before going to the next directory, returning and appending the files as necessary.
+**_DESCRIPTION:_** This function reads the contents of a specific directory and returns the list of contents, along with whether the item is a file or directory. This function is recursive, and does all of the heavy lifting for reading the directories. If the cliFlag variable is not "symlink" then configList slice will be populated with the paths of directories that need to have .categories files set. Essentially what happens, is that each time this function is called, it will call itself again for each directory that it finds. Basically, it will descend to the bottom of each directory structure in turn, working its way back up to the /lib folder before going to the next directory, returning and appending the files as necessary.
 
 **_LOGIC:_**
 1. Read the entire contents of the directory, as passed by the directory parameter
-2. Check if cmdFlag is "config"
+2. Check if cliFlag is "config"
     - If YES: 
         - skip all files, except for .categories, add all directories to dirList
         - If the .categories file DOES NOT exist:
             - Add current path to configList
     - ELSE:
         - Add all files and directories to dirList
-        - Check if cmdFlag is "symlink"
+        - Check if cliFlag is "symlink"
         - if YES:
             - Add contents of .categories file to dirList via populateFromCategories("\<Current Path>")
         - ELSE:
@@ -218,6 +219,30 @@ Main function:
 **_RETURNS:_** <returns>
 
 **_DESCRIPTION:_** <description>
+
+**_LOGIC:_**
+1. <Logic>
+2. <Logic>
+
+---
+## **_createSymlinks(filesList)_**
+**_PARAMETERS:_** filesList (fileList)
+
+**_RETURNS:_** NOTHING
+
+**_DESCRIPTION:_** <description>
+
+**_LOGIC:_**
+1. <Logic>
+2. <Logic>
+
+---
+## **_showHelp()_**
+**_PARAMETERS:_** NONE
+
+**_RETURNS:_** NOTHING
+
+**_DESCRIPTION:_** Displays a brief help message explaining CLI usage when no options are given or "-h" or "--help" is passed as a flag.
 
 **_LOGIC:_**
 1. <Logic>
