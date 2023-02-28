@@ -1,3 +1,4 @@
 .vscode/
 bin/wordlists.db
 wordlists.session.sql
+bin/__pycache__/*
