@@ -1,5 +1,14 @@
 from os import system, name
 
+
+def DisplayMenu():
+    ClearScreen()
+    PrintHeader()
+    menuOptionsL = [[1, "Show Lists"], [2, "Build Lists"], [3, "Categories"]]
+    menuOptionsR = [["X.", "Exit"], ["W.", "Wipe Database"]]
+    DisplayOptions(menuOptionsL, menuOptionsR)
+    PrintFooter()
+    
 def PrintHeader(title="Main Menu"):
     print("+" + "-=" * 38 + "-+")
     print("| " + title.center(75," ") + " |")
@@ -37,11 +46,3 @@ def ClearScreen():
         _ = system('cls')
     else:
         _ = system('clear')
-
-def DisplayMenu():
-    ClearScreen()
-    PrintHeader()
-    menuOptionsL = [[1,"Show Lists"], [2,"Build Lists"],[3,"Categories"]]
-    menuOptionsR = [["X.", "Exit"],["W.","Wipe Database"]]
-    DisplayOptions(menuOptionsL, menuOptionsR)
-    PrintFooter()
