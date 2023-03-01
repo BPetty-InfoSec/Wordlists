@@ -1,7 +1,6 @@
 import os
 
 def GetFilenames(pathVar):
-    print("Path: " + pathVar)
     listing = os.listdir(pathVar)
     filesList = []
     dirsList = []

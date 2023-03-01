@@ -1,4 +1,5 @@
 import bin.mainmenu as menu
+import bin.findfiles as findfiles
 from contextlib import closing
 import sqlite3
 
@@ -21,5 +22,6 @@ def CreateDBTables():
 def main():
     CreateDBTables()
     menu.DisplayMenu()
+    print(findfiles.GetFilenames("lib"))
 
 main()
