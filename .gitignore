@@ -3,3 +3,4 @@ bin/wordlists.db
 wordlists.session.sql
 bin/__pycache__/
 lib/
+.DS_Store
