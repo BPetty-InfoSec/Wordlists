@@ -32,14 +32,6 @@ def LoadOptionsIntoMenu():
     menuOptionsQuery = "SELECT * FROM menuOptions"
     optsFile = open("bin/menuoptions.json")
     menuOptions = json.load(optsFile)
-    # menuOptions =   [
-    #                     [1, "Show Lists]"],
-    #                     [2, "Build Lists"],
-    #                     [3, "Show Categories"],
-    #                     [4, "Edit Categories"],
-    #                     ["X.", "Exit"],
-    #                     ["W.", "Wipe Database"]
-    #                 ]
     insertMenuOptions = "INSERT INTO menuOptions (option, name) VALUES (?, ?)"
 
     with closing(sqlite3.connect("bin/wordlists.db")) as con:
