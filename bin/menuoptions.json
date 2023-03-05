@@ -1,0 +1,9 @@
+[
+	[1, "Show Lists"],
+	[2, "Build Lists"],
+	[3, "Show Categories"],
+	[4, "Edit Categories"],
+	["W", "Wipe Database"],
+	["T", "Testing Menu Options"],
+	["X", "Exit"]
+]

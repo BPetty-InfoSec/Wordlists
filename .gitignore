@@ -1,5 +1,7 @@
 .vscode/
 bin/wordlists.db
+wordlists.db
+test.py
 wordlists.session.sql
 bin/__pycache__/
 lib/
