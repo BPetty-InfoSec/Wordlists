@@ -3,6 +3,7 @@
 	[2, "Build Lists"],
 	[3, "Show Categories"],
 	[4, "Edit Categories"],
+	[5, "Assign Categories"],
 	["W", "Wipe Database"],
 	["X", "Exit"]
 ]

@@ -1,10 +1,10 @@
 from os import system, name
-import sqlite3
+import sqlite3, json
 from contextlib import closing
 import bin.menucommands as commands
 
 def DisplayMenu():
-    """This is the function that will display the menu
+    """This is the function that will display the main menu
     """
     menuOptionsL, menuOptionsR = LoadMenuOptions()  # Load menu options from menuoptions.json
     ClearScreen()                                   # Clear the screen
@@ -14,7 +14,7 @@ def DisplayMenu():
     GetInput()                                      # Gets user input
 
     
-def PrintHeader(title="Main Menu"):
+def PrintHeader(title="Main Menu", columnCount = 2):
     """Prints the header for displaying the menu
 
     Args:
@@ -22,7 +22,7 @@ def PrintHeader(title="Main Menu"):
     """
     print("+" + "-=" * 38 + "-+")
     print("| " + title.center(75," ") + " |")
-    print("+" + "-" * 77 + "+")
+    PrintFooter(columnCount)
 
 def PrintLine(optionL, optionR):
     """Prints a single line of the menu.
@@ -49,10 +49,15 @@ def PrintLine(optionL, optionR):
         rightOption = ""
     print("|  " + leftOption.ljust(35, " ") + " | " + rightOption.ljust(35, " ") + "  |")
     
-def PrintFooter():
+def PrintFooter(columnCount = 2):
     """Prints a simple footer line
     """
-    print("+" + "-" * 77 + "+")
+    if columnCount == 1:
+        print("+" + "-" * 77 + "+")
+    elif columnCount == 2:
+        print("+-" + "-" * 36 + "-+-" + "-" * 36 + "-+")
+    elif columnCount == 3:
+        print("+-" + "-" * 23 + "-+-" + "-" * 23 + "-+-" + "-" * 23 + "-+")
 
 def DisplayOptions(optionsL, optionsR):
     """Handles the logic for printing menu lines.
@@ -136,33 +141,80 @@ def ShowListDoubleColumn(listItems):
     if len(lineItems) < 2:
         print("| " + lineItems[0].center(36, " ") + " | " + "|".rjust(38," "))
         
-def ShowListTripleColumn(listItems):
+def ShowListTripleColumn(listItems, showNumbers = False):
     # Shows items in a triple-column list
     #
     # Args:
     # param listItems (list): A list of items to display
+    # param showNumbers (bool): Whether or not to show numbers when listing
     loopCount = 1
     lineItems = []
+    numberPlaces = 0 # Initialize to zero so math works when showNumbers is False
+    columnWidth = 23
+    
+    itemIndex = 0 # Use for when showNumbers is True, to get a display number.
     for item in listItems:
-        lineItems.append(item)
+        itemIndex += 1
+        lineItems.append([itemIndex,item])
         if loopCount == 3:
-            print(  "| " + lineItems[0].center(23, " ") +
-                    " | " + lineItems[1].center(23, " ") + 
-                    " | " + lineItems[2].center(23, " ") +
-                    " |")
+            if showNumbers:
+                print(  "| " + (str(lineItems[0][0]) + ". " + lineItems[0][1]) + 
+                        " " * (columnWidth - (len(str(lineItems[0][0])) + len(lineItems[0][1]) + 2)) +
+                        " | " + (str(lineItems[1][0]) + ". " + lineItems[1][1]) +
+                        " " * (columnWidth - (len(str(lineItems[1][0])) + len(lineItems[1][1]) + 2)) +
+                        " | " + (str(lineItems[2][0]) + ". " + lineItems[2][1]) +
+                        " " * (columnWidth - (len(str(lineItems[2][0])) + len(lineItems[2][1]) + 2)) +
+                        " |")
+            else:
+                print(  "| " + lineItems[0][1].center(23, " ") +
+                        " | " + lineItems[1][1].center(23, " ") + 
+                        " | " + lineItems[2][1].center(23, " ") +
+                        " |")
         loopCount += 1
         if loopCount > 3:
             loopCount = 1
             lineItems = []
     remainderItems = len(lineItems)
     if remainderItems == 1:
-        print(  "| " + lineItems[0].center(23, " ") +
-                " | " + " "*23 + " | " + 
-                "|".rjust(25," "))
+        if showNumbers:
+            print(  "| " + (str(lineItems[0][0]) + ". " + lineItems[0][1]) +
+                    " " * (columnWidth - (len(str(lineItems[0][0])) + len(lineItems[0][1]) + 2)) +
+                    " | " + " "*23 + " | " + 
+                    " |".rjust(25," "))
+        else:
+            print(  "| " + lineItems[0][1].center(23," ") + 
+                    " | " + " "*23 + " | " +
+                    " |".rjust(25," "))
     if remainderItems == 2:
-        print(  "| " + lineItems[0].center(23, " ") +
-                " | " + lineItems[1].center(23, " ") +
-                " | " + "|".rjust(25, " "))
+        if showNumbers:
+            print(  "| " + (str(lineItems[0][0]) + ". " + lineItems[0][1]) +
+                    " " * (columnWidth - (len(str(lineItems[0][0])) + len(lineItems[0][1]) + 2)) +
+                    " | " + (str(lineItems[1][0]) + ". " + lineItems[1][1]) +
+                    " " * (columnWidth - (len(str(lineItems[0][0])) + len(lineItems[0][1]) + 2)) +
+                    " | " + " |".rjust(25, " "))
+        else:
+            print(  "| " + lineItems[0][1].center(23, " ") +
+                    " | " + lineItems[1][1].center(23, " ") + " | " +
+                    " |".rjust(25, " "))
+
+def ShowWordListItem(listItem):
+    print("| File: " + listItem[0] + " " * (77 - (len(listItem[0]) + 8)) + " |")
+    categoriesString = ""
+    loopIndex = 0
+    itemCategories = json.loads(listItem[1])
+    for category in itemCategories:
+        if loopIndex > 0:
+            categoriesString += ", "
+        categoriesString += category
+    print("| -- Categories: " + categoriesString + " " * (77-(len(categoriesString) + 17)) + " |")
+
+def ShowWordLists(wordLists):
+    PrintHeader("Word Lists Available",1)
+    for list in wordLists:
+        ShowWordListItem(list)
+    PrintFooter(1)
+    input("\nPress Enter to continue...")
+    DisplayMenu()
 
 def GetInput():
     # Gets input from the user
@@ -173,3 +225,11 @@ def GetInput():
     optionChosen = input("\nChoose Option: ")
     if optionChosen == "3":
         commands.ShowCategories()
+    elif optionChosen == "4":
+        commands.EditCategories()
+    elif optionChosen == "2":
+        commands.BuildLists()
+    elif optionChosen == "1":
+        commands.ShowLists()
+    elif optionChosen == "5":
+        commands.AssignCategories()

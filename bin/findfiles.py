@@ -1,6 +1,6 @@
 import os
 
-def GetFilenames(pathVar):
+def GetFilenames(pathVar = "lib"):
     if os.name == 'nt':
         dirSep = "\\"
     else:
