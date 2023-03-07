@@ -37,6 +37,7 @@ def BuildLists():
     display.DisplayMenu()
     
 def ShowLists():
+    display.ClearScreen()
     wordLists = dbaccess.ReadWordLists()
     display.ShowWordLists(wordLists)
     input("\nPress Enter to continue")
@@ -47,11 +48,13 @@ def AssignCategories():
     lists = []
     for item in wordlists:
         lists.append(item[0])
+    display.ClearScreen()
     display.PrintHeader("Available Wordlists")
-    display.ShowListTripleColumn(list, True)
+    display.ShowListTripleColumn(lists, True)
     display.PrintFooter(3)
     listChoice = int(input("\nSelect a list: "))
     chosenList = wordlists[listChoice - 1]
+    display.ClearScreen()
     display.PrintHeader("Available Categories")
     categories = dbaccess.ReadCategories()
     display.ShowListTripleColumn(categories, True)
@@ -68,5 +71,12 @@ def AssignCategories():
                 addCategories.append(int(multiChoice)-1)
             else:
                 doneChoosing = True
+    categoriesString = ""
+    loopIndex = 0
+    for category in addCategories:
+        if loopIndex > 0: categoriesString += ", "
+        categoriesString += categories[category]
+        loopIndex += 1
     if len(addCategories) > 0:
-        dbaccess.AddCategoriesToList(chosenList,addCategories)
+        dbaccess.AddCategoriesToList(chosenList,categoriesString)
+    display.DisplayMenu()

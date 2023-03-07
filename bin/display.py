@@ -151,7 +151,6 @@ def ShowListTripleColumn(listItems, showNumbers = False):
     lineItems = []
     numberPlaces = 0 # Initialize to zero so math works when showNumbers is False
     columnWidth = 23
-    
     itemIndex = 0 # Use for when showNumbers is True, to get a display number.
     for item in listItems:
         itemIndex += 1
@@ -201,7 +200,7 @@ def ShowWordListItem(listItem):
     print("| File: " + listItem[0] + " " * (77 - (len(listItem[0]) + 8)) + " |")
     categoriesString = ""
     loopIndex = 0
-    itemCategories = json.loads(listItem[1])
+    itemCategories = listItem[1]
     for category in itemCategories:
         if loopIndex > 0:
             categoriesString += ", "

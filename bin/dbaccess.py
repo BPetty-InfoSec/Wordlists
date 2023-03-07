@@ -20,7 +20,7 @@ def AddFilesToDB(filesList):
                 if foundFile == False:
                     fileName = os.path.basename(line)
                     insertRow = "INSERT INTO lists (name,categories,filePath) VALUES (?,?,?)"
-                    cur.execute(insertRow,(fileName,"[]",line))
+                    cur.execute(insertRow,(fileName,"",line))
                     con.commit()
 
 def ReadCategories():
@@ -74,12 +74,10 @@ def ReadWordLists():
 def AddCategoriesToList(listItem, categoriesList):
     with closing(sqlite3.connect("bin/wordlists.db")) as con:
         with closing(con.cursor()) as cur:
-            updateListQuery = "UPDATE lists SET categories = ? where name = ?"
-            selectedList = cur.fetchall()
-            categories = []
-            getCategoryQuery = "SELECT * FROM categories WHERE name = ?"
-            for item in categoriesList:
-                cur.execute(getCategoryQuery, (item,))
-                categories.append(cur.fetchall())
-            cur.execute(updateListQuery, (listItem, categories))
+            getListsQuery = "SELECT * FROM lists WHERE name = ?"
+            cur.execute(getListsQuery, (str(listItem[0]),))
+            updateListQuery = "UPDATE lists SET categories = ? where filePath = ?"
+            filePath = listItem[2]
+            categoriesList = categoriesList
+            cur.execute(updateListQuery, (categoriesList, filePath))
             con.commit()
