@@ -4,6 +4,8 @@
 	[3, "Show Categories"],
 	[4, "Edit Categories"],
 	[5, "Assign Categories"],
+	[6, "Add Directory Options"],
+	[7, "Edit Directory Options"],
 	["W", "Wipe Database"],
 	["X", "Exit"]
 ]
